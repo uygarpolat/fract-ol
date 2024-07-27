@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fractal_attempt3.c                                 :+:      :+:    :+:   */
+/*   fractal.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/28 01:28:31 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/28 01:59:32 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdio.h>
@@ -46,44 +46,7 @@ typedef struct	s_colors
 	double	g;
 	double	a;
 }			t_colors;
-/*
 
-int	ft_rand_color_map(int val, t_fract *stc)
-{
-	double	i;
-	int		r;
-	int		g;
-	int		b;
-
-	i = (double)val / stc->precision;
-	r = (int)(stc->rand_r * i * 4242) % 255;
-	g = (int)(stc->rand_g * i * 4242) % 255;
-	b = (int)(stc->rand_b * i * 4242) % 255;
-	return (ft_rgbatoi(r, g, b, 255));
-}
-
-void	ft_show_img(t_fract *stc)
-{
-	int	res;
-	int	color;
-	int	row;
-	int	col;
-
-	row = 0;
-	while (row < HEIGHT)
-	{
-		col = 0;
-		while (col < WIDTH)
-		{
-			res = stc->func(stc, row, col);
-			color = ft_rand_color_map(res, stc);
-			mlx_put_pixel(stc->img, col++, row, color);
-		}
-		row++;
-	}
-	mlx_image_to_window(stc->mlx, stc->img, 0, 0);
-}
-*/
 int	is_in_set(double x, double y)
 {
 	int			i;
