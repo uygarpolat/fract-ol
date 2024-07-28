@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/28 16:29:04 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/28 20:46:19 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef struct s_fractol
 	double		a;
 	double		scale;
 	int			precision;
+	double		julia_c_real;
+	double		julia_c_imaginary;
 }				t_fractol;
 
 #endif

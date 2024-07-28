@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/28 16:42:58 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/28 21:09:08 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,14 @@ int	is_in_set(double x0, double y0, t_fractol *f)
 	double		magnitude_squared;
 
 	i = 0;
-	z.real = 0;
-	z.i = 0;
-	c.real = x0;
-	c.i = y0;
+	//z.real = 0;
+	//z.i = 0;
+	//c.real = x0;
+	//c.i = y0;
+	z.real = x0;
+	z.i = y0;
+	c.real = f->julia_c_real;
+	c.i = f->julia_c_imaginary;
 	while (i < f->precision)
 	{
 		tmp_real = z.real * z.real - z.i * z.i + c.real;
@@ -62,7 +66,7 @@ uint32_t	color_generator(int i, t_fractol *f)
 	r = (int)(f->r * new * 4242) % 255;
 	g = (int)(f->b * new * 4242) % 255;
 	b = (int)(f->g * new * 4242) % 255;
-	return (ft_pixel(r, g, b, 255));
+	return (ft_pixel(r, g, b, f->a));
 }
 
 void	ft_draw_mandelbrot(void *param)
@@ -99,6 +103,8 @@ int	initialize_fractol(t_fractol *f)
 	f->a = 255;
 	f->scale = 4.0 / WIDTH;
 	f->precision = 100;
+	f->julia_c_real = -0.5251993;
+	f->julia_c_imaginary = -0.5251993;
 	f->mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true);
 	if (!f->mlx)
 		return (EXIT_FAILURE);
@@ -116,11 +122,23 @@ int	initialize_fractol(t_fractol *f)
 	return (0);
 }
 
+void	ft_keyboard_hooks(mlx_key_data_t k_data, void *vd)
+{
+	t_fractol *f;
+
+	f = (t_fractol *)vd;
+	if (k_data.key == MLX_KEY_Q && k_data.action == MLX_PRESS)
+		f->precision *= 1.1;
+	if (k_data.key == MLX_KEY_W && k_data.action == MLX_PRESS)
+		f->precision *= 0.9;
+}
+
 int	main(void)
 {
 	t_fractol	f;
 
 	initialize_fractol(&f);
+	mlx_key_hook(f.mlx, &ft_keyboard_hooks, &f);
 	mlx_loop_hook(f.mlx, ft_draw_mandelbrot, &f);
 	mlx_loop(f.mlx);
 	mlx_terminate(f.mlx);
