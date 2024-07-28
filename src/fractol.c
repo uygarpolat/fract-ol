@@ -1,16 +1,15 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fractal.c                                          :+:      :+:    :+:   */
+/*   fractol.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/28 02:08:50 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/28 16:42:58 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include <MLX42/MLX42.h>
 #include "fractol.h"
 
 float	ft_rand(void)
@@ -21,38 +20,25 @@ float	ft_rand(void)
 	return (((next / 65536) % 32768) / (float)32767);
 }
 
-
-static mlx_image_t* image;
-
-int32_t ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
+int32_t	ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
 {
-    return (r << 24 | g << 16 | b << 8 | a);
+	return (r << 24 | g << 16 | b << 8 | a);
 }
 
-typedef struct	s_colors
-{
-	double	r;
-	double	b;
-	double	g;
-	double	a;
-}			t_colors;
-
-int	is_in_set(double x, double y)
+int	is_in_set(double x0, double y0, t_fractol *f)
 {
 	int			i;
-	int			iterations;
 	t_complex	z;
 	t_complex	c;
 	double		tmp_real;
 	double		magnitude_squared;
 
 	i = 0;
-	iterations = 100;
 	z.real = 0;
 	z.i = 0;
-	c.real = x;
-	c.i = y;
-	while (i < iterations)
+	c.real = x0;
+	c.i = y0;
+	while (i < f->precision)
 	{
 		tmp_real = z.real * z.real - z.i * z.i + c.real;
 		z.i = 2 * z.real * z.i + c.i;
@@ -65,7 +51,7 @@ int	is_in_set(double x, double y)
 	return (i);
 }
 
-uint32_t color_generator(int i, t_colors *colors)
+uint32_t	color_generator(int i, t_fractol *f)
 {
 	double	new;
 	int		r;
@@ -73,69 +59,70 @@ uint32_t color_generator(int i, t_colors *colors)
 	int		b;
 
 	new = (double)i / 100;
-	r = (int)(colors->r * new * 4242) % 255;
-	g = (int)(colors->b * new * 4242) % 255;
-	b = (int)(colors->g * new * 4242) % 255;
+	r = (int)(f->r * new * 4242) % 255;
+	g = (int)(f->b * new * 4242) % 255;
+	b = (int)(f->g * new * 4242) % 255;
 	return (ft_pixel(r, g, b, 255));
 }
 
-void ft_draw_mandelbrot(void* param)
+void	ft_draw_mandelbrot(void *param)
 {
-	int	i;
-	int	j;
-	uint32_t	color;
-	double scale = 4.0 / WIDTH;
- 	double x0, y0;
-	t_colors	colors;
+	t_fractol	*f;
+	int			i;
+	int			j;
+	double		x0;
+	double		y0;
 
-	colors.r = ft_rand();
-	colors.b = ft_rand();
-	colors.g = ft_rand();
-	colors.a = 255;
-
-	(void)param;
-
+	f = (t_fractol *)param;
 	i = 0;
 	while (i < HEIGHT)
 	{
 		j = 0;
 		while (j < WIDTH)
 		{
-		    x0 = (j - WIDTH / 2) * scale;
-            y0 = (i - HEIGHT / 2) * scale;
-			color = color_generator(is_in_set(x0, y0), &colors);
-			mlx_put_pixel(image, j, i, color);
+			x0 = (j - WIDTH / 2) * f->scale;
+			y0 = (i - HEIGHT / 2) * f->scale;
+			f->color = color_generator(is_in_set(x0, y0, f), f);
+			mlx_put_pixel(f->image, j, i, f->color);
 			j++;
 		}
 		i++;
 	}
+	mlx_image_to_window(f->mlx, f->image, 0, 0);
 }
 
-int32_t main(void)
+int	initialize_fractol(t_fractol *f)
 {
-	mlx_t* mlx;
-
-	if (!(mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true)))
+	f->r = ft_rand();
+	f->b = ft_rand();
+	f->g = ft_rand();
+	f->a = 255;
+	f->scale = 4.0 / WIDTH;
+	f->precision = 100;
+	f->mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true);
+	if (!f->mlx)
+		return (EXIT_FAILURE);
+	f->image = mlx_new_image(f->mlx, WIDTH, HEIGHT);
+	if (!f->image)
 	{
-		puts(mlx_strerror(mlx_errno));
-		return(EXIT_FAILURE);
+		mlx_close_window(f->mlx);
+		return (EXIT_FAILURE);
 	}
-	if (!(image = mlx_new_image(mlx, WIDTH, HEIGHT)))
+	if (mlx_image_to_window(f->mlx, f->image, 0, 0) == -1)
 	{
-		mlx_close_window(mlx);
-		puts(mlx_strerror(mlx_errno));
-		return(EXIT_FAILURE);
+		mlx_close_window(f->mlx);
+		return (EXIT_FAILURE);
 	}
-	if (mlx_image_to_window(mlx, image, 0, 0) == -1)
-	{
-		mlx_close_window(mlx);
-		puts(mlx_strerror(mlx_errno));
-		return(EXIT_FAILURE);
-	}
+	return (0);
+}
 
-	mlx_loop_hook(mlx, ft_draw_mandelbrot, mlx);
+int	main(void)
+{
+	t_fractol	f;
 
-	mlx_loop(mlx);
-	mlx_terminate(mlx);
+	initialize_fractol(&f);
+	mlx_loop_hook(f.mlx, ft_draw_mandelbrot, &f);
+	mlx_loop(f.mlx);
+	mlx_terminate(f.mlx);
 	return (EXIT_SUCCESS);
 }
