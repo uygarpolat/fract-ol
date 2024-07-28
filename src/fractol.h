@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/28 02:10:26 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/28 16:29:04 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,17 @@ typedef struct s_complex
 	double	i;
 }			t_complex;
 
-typedef struct s_fractal
+typedef struct s_fractol
 {
-	
-}	t_fractal;
+	mlx_image_t	*image;
+	mlx_t		*mlx;
+	uint32_t	color;
+	double		r;
+	double		b;
+	double		g;
+	double		a;
+	double		scale;
+	int			precision;
+}				t_fractol;
 
 #endif
