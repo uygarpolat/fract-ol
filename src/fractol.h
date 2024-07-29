@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/28 20:46:19 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/29 16:58:04 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@ typedef struct s_fractol
 	mlx_t		*mlx;
 	uint32_t	color;
 	double		r;
-	double		b;
 	double		g;
+	double		b;
 	double		a;
+	double		x0;
+	double		y0;
 	double		scale;
 	int			precision;
+	int			set_type;
 	double		julia_c_real;
 	double		julia_c_imaginary;
 }				t_fractol;
