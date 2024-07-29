@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/29 19:41:27 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/29 23:23:28 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 # include <stdbool.h>
 # include <MLX42/MLX42.h>
 
-# define WIDTH	1200
-# define HEIGHT	1200
+# define WIDTH	800
+# define HEIGHT	800
 
 typedef struct s_complex
 {

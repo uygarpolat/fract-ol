@@ -6,11 +6,105 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/29 20:31:56 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/30 02:24:28 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
+
+int	ft_strlen(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+int	ft_atoi(const char *str)
+{
+	long	res;
+	long	sign;
+
+	res = 0;
+	sign = 1;
+	while (*str == ' ' || (*str >= '\t' && *str <= '\r'))
+		str++;
+	if (*str == '+' || *str == '-')
+	{
+		if (*str == '-')
+			sign *= -1;
+		str++;
+	}
+	while ('0' <= *str && *str <= '9')
+	{
+		res = res * 10 + *str - 48;
+		if (res < 0 && sign == 1)
+			return (-1);
+		if (res < 0 && sign == -1)
+			return (0);
+		str++;
+	}
+	return ((int)(res * sign));
+}
+
+long double	ft_atold(const char *s)
+{
+	char		*str;
+	long double	int_part;
+	long double	float_part;
+	int			i;
+	int			sign;
+
+	sign = 1;
+	str = (char *) s;
+	while (*str == ' ' || (*str >= '\t' && *str <= '\r'))
+		str++;
+	if (*str == '-')
+		sign *= -1;
+	if (*str == '+' || *str == '-')
+		str++;
+	int_part = (long double)ft_atoi(str);
+	while (*str && *str != '.')
+		str++;
+	if (*str == '.')
+		str++;
+	float_part = (long double)ft_atoi(str);
+	i = ft_strlen(str);
+	while (i--)
+		float_part /= 10;
+	return (sign * (int_part + float_part));
+}
+
+t_complex	ft_complex_sum(t_complex comp1, t_complex comp2)
+{
+	t_complex	result;
+
+	result.real = comp1.real + comp2.real;
+	result.i = comp1.i + comp2.i;
+	return (result);
+}
+
+t_complex	ft_complex_square(t_complex comp)
+{
+	t_complex	result;
+
+	result.real = (comp.real * comp.real) - (comp.i * comp.i);
+	result.i = 2 * comp.real * comp.i;
+	return (result);
+}
+
+t_complex	ft_complex_cube(t_complex comp)
+{
+	t_complex	result;
+
+	result.real = (comp.real * comp.real * comp.real)
+		- 3 * (comp.real * comp.i * comp.i);
+	result.i = 3 * (comp.real * comp.real * comp.i)
+		- (comp.i * comp.i * comp.i);
+	return (result);
+}
 
 void	ft_close(t_fractol *f, int exitcode)
 {
@@ -42,19 +136,16 @@ int	is_in_julia(t_fractol *f)
 	int			i;
 	t_complex	z;
 	t_complex	c;
-	double		tmp_real;
 	double		magnitude_squared;
 
 	i = 0;
 	z.real = f->x0;
-	z.i = f->y0;
+	z.i = -f->y0;
 	c.real = f->julia_c_real;
 	c.i = f->julia_c_imaginary;
 	while (i < f->precision)
 	{
-		tmp_real = z.real * z.real - z.i * z.i + c.real;
-		z.i = 2 * z.real * z.i + c.i;
-		z.real = tmp_real;
+		z = ft_complex_sum(ft_complex_square(z), c);
 		magnitude_squared = z.real * z.real + z.i * z.i;
 		if (magnitude_squared > 4.0)
 			break ;
@@ -68,7 +159,6 @@ int	is_in_mandelbrot(t_fractol *f)
 	int			i;
 	t_complex	z;
 	t_complex	c;
-	double		tmp_real;
 	double		magnitude_squared;
 
 	i = 0;
@@ -78,9 +168,30 @@ int	is_in_mandelbrot(t_fractol *f)
 	c.i = f->y0;
 	while (i < f->precision)
 	{
-		tmp_real = z.real * z.real - z.i * z.i + c.real;
-		z.i = 2 * z.real * z.i + c.i;
-		z.real = tmp_real;
+		z = ft_complex_sum(ft_complex_square(z), c);
+		magnitude_squared = z.real * z.real + z.i * z.i;
+		if (magnitude_squared > 4.0)
+			break ;
+		i++;
+	}
+	return (i);
+}
+
+int	is_in_multibrot3(t_fractol *f)
+{
+	int			i;
+	t_complex	z;
+	t_complex	c;
+	double		magnitude_squared;
+
+	i = 0;
+	z.real = 0;
+	z.i = 0;
+	c.real = f->x0;
+	c.i = f->y0;
+	while (i < f->precision)
+	{
+		z = ft_complex_sum(ft_complex_cube(z), c);
 		magnitude_squared = z.real * z.real + z.i * z.i;
 		if (magnitude_squared > 4.0)
 			break ;
@@ -145,10 +256,10 @@ void	draw_fractals(void *param)
 		j = 0;
 		while (j < WIDTH)
 		{
-			f->x0 = (j - WIDTH / 2) * f->scale;
-			f->y0 = (i - HEIGHT / 2) * f->scale;
+			f->y0 = (j - WIDTH / 2) * f->scale;
+			f->x0 = (i - HEIGHT / 2) * f->scale;
 			f->color = color_generator(f->func(f), f);
-			mlx_put_pixel(f->image, j, i, f->color);
+			mlx_put_pixel(f->image, i, j, f->color);
 			j++;
 		}
 		i++;
@@ -164,9 +275,7 @@ int	initialize_fractol(t_fractol *f)
 	f->a = 255;
 	f->scale = 4.0 / WIDTH;
 	f->precision = 100;
-	f->julia_c_real = -0.5251993;
-	f->julia_c_imaginary = -0.5251993;
-	f->mlx = mlx_init(WIDTH, HEIGHT, "MLX42", true);
+	f->mlx = mlx_init(WIDTH, HEIGHT, "Fractol", true);
 	if (!f->mlx)
 		return (EXIT_FAILURE);
 	f->image = mlx_new_image(f->mlx, WIDTH, HEIGHT);
@@ -218,12 +327,18 @@ int	ft_strcmp(char *str1, char *str2)
 
 int	validity_check(t_fractol *f, int argc, char **argv)
 {
-	if (argc == 2 && !ft_strcmp(argv[1], "mandelbrot"))
+	if (argc == 2 && !ft_strcmp(argv[1], "Mandelbrot"))
 		f->func = &is_in_mandelbrot;
-	else if (argc == 4 && !ft_strcmp(argv[1], "julia"))
+	else if (argc == 4 && !ft_strcmp(argv[1], "Julia"))
+	{
+		f->julia_c_real = ft_atold(argv[2]);
+		f->julia_c_imaginary = ft_atold(argv[3]);
 		f->func = &is_in_julia;
-	else if (argc == 2 && !ft_strcmp(argv[1], "ship"))
+	}
+	else if (argc == 2 && !ft_strcmp(argv[1], "Ship"))
 		f->func = &is_in_burning_ship;
+	else if (argc == 2 && !ft_strcmp(argv[1], "Multibrot3"))
+		f->func = &is_in_multibrot3;
 	else
 		return (0);
 	return (1);
