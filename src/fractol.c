@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/29 17:00:51 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/29 20:31:56 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,25 +37,7 @@ int32_t	ft_pixel(int32_t r, int32_t g, int32_t b, int32_t a)
 	return (r << 24 | g << 16 | b << 8 | a);
 }
 
-void	choose_set(t_fractol *f, t_complex *z, t_complex *c)
-{
-	if (f->set_type == 1)
-	{
-		z->real = 0;
-		z->i = 0;
-		c->real = f->x0;
-		c->i = f->y0;
-	}
-	else if (f->set_type == 2)
-	{
-		z->real = f->x0;
-		z->i = f->y0;
-		c->real = f->julia_c_real;
-		c->i = f->julia_c_imaginary;
-	}
-}
-
-int	is_in_set(t_fractol *f)
+int	is_in_julia(t_fractol *f)
 {
 	int			i;
 	t_complex	z;
@@ -64,7 +46,10 @@ int	is_in_set(t_fractol *f)
 	double		magnitude_squared;
 
 	i = 0;
-	choose_set(f, &z, &c);
+	z.real = f->x0;
+	z.i = f->y0;
+	c.real = f->julia_c_real;
+	c.i = f->julia_c_imaginary;
 	while (i < f->precision)
 	{
 		tmp_real = z.real * z.real - z.i * z.i + c.real;
@@ -74,6 +59,61 @@ int	is_in_set(t_fractol *f)
 		if (magnitude_squared > 4.0)
 			break ;
 		i++;
+	}
+	return (i);
+}
+
+int	is_in_mandelbrot(t_fractol *f)
+{
+	int			i;
+	t_complex	z;
+	t_complex	c;
+	double		tmp_real;
+	double		magnitude_squared;
+
+	i = 0;
+	z.real = 0;
+	z.i = 0;
+	c.real = f->x0;
+	c.i = f->y0;
+	while (i < f->precision)
+	{
+		tmp_real = z.real * z.real - z.i * z.i + c.real;
+		z.i = 2 * z.real * z.i + c.i;
+		z.real = tmp_real;
+		magnitude_squared = z.real * z.real + z.i * z.i;
+		if (magnitude_squared > 4.0)
+			break ;
+		i++;
+	}
+	return (i);
+}
+
+int	is_in_burning_ship(t_fractol *f)
+{
+	int			i;
+	t_complex	z;
+	t_complex	c;
+	double		tmp_real;
+	double		magnitude_squared;
+
+	i = -1;
+	z.real = 0;
+	z.i = 0;
+	c.real = f->x0;
+	c.i = f->y0;
+	while (++i < f->precision)
+	{
+		if (z.real < 0)
+			z.real = -z.real;
+		if (z.i < 0)
+			z.i = -z.i;
+		tmp_real = z.real * z.real - z.i * z.i + c.real;
+		z.i = 2 * z.real * z.i + c.i;
+		z.real = tmp_real;
+		magnitude_squared = z.real * z.real + z.i * z.i;
+		if (magnitude_squared > 4.0)
+			break ;
 	}
 	return (i);
 }
@@ -92,7 +132,7 @@ uint32_t	color_generator(int i, t_fractol *f)
 	return (ft_pixel(r, g, b, f->a));
 }
 
-void	ft_draw_mandelbrot(void *param)
+void	draw_fractals(void *param)
 {
 	t_fractol	*f;
 	int			i;
@@ -107,7 +147,7 @@ void	ft_draw_mandelbrot(void *param)
 		{
 			f->x0 = (j - WIDTH / 2) * f->scale;
 			f->y0 = (i - HEIGHT / 2) * f->scale;
-			f->color = color_generator(is_in_set(f), f);
+			f->color = color_generator(f->func(f), f);
 			mlx_put_pixel(f->image, j, i, f->color);
 			j++;
 		}
@@ -179,9 +219,11 @@ int	ft_strcmp(char *str1, char *str2)
 int	validity_check(t_fractol *f, int argc, char **argv)
 {
 	if (argc == 2 && !ft_strcmp(argv[1], "mandelbrot"))
-		f->set_type = 1;
+		f->func = &is_in_mandelbrot;
 	else if (argc == 4 && !ft_strcmp(argv[1], "julia"))
-		f->set_type = 2;
+		f->func = &is_in_julia;
+	else if (argc == 2 && !ft_strcmp(argv[1], "ship"))
+		f->func = &is_in_burning_ship;
 	else
 		return (0);
 	return (1);
@@ -195,7 +237,7 @@ int	main(int argc, char **argv)
 		return (printf("Usage:\n"), 1);
 	initialize_fractol(&f);
 	mlx_key_hook(f.mlx, &ft_keyboard_hooks, &f);
-	mlx_loop_hook(f.mlx, ft_draw_mandelbrot, &f);
+	mlx_loop_hook(f.mlx, draw_fractals, &f);
 	mlx_loop(f.mlx);
 	mlx_terminate(f.mlx);
 	return (EXIT_SUCCESS);
