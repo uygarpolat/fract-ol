@@ -6,11 +6,35 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/30 02:24:28 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/30 17:30:05 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
+}
+
+void	print_usage(void)
+{
+	ft_putstr_fd("Usage:\nFirst argument has to be one of those sets: ", 1);
+	ft_putstr_fd("Mandelbrot, Julia.\n", 1);
+	ft_putstr_fd("In case the Julia set was choosen provide two additional ", 1);
+	ft_putstr_fd("parameters: the real and imaginary parts of C.\n", 1);
+	ft_putstr_fd("To move the view use arrows, to zoom in and out use scroll.\n", 1);
+	ft_putstr_fd("To increase precision press Q to decrease it press W.\n", 1);
+	ft_putstr_fd("To change colour palette press C.\n", 1);
+	exit (1);
+}
 
 int	ft_strlen(char *str)
 {
@@ -22,31 +46,39 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
+static int	ft_isspace(const char c)
+{
+	if (c == ' ' || (c >= 9 && c <= 13))
+		return (1);
+	return (0);
+}
+
 int	ft_atoi(const char *str)
 {
-	long	res;
-	long	sign;
+	int			sign;
+	long long	nbr;
 
-	res = 0;
 	sign = 1;
-	while (*str == ' ' || (*str >= '\t' && *str <= '\r'))
+	nbr = 0;
+	while (ft_isspace(*str))
 		str++;
-	if (*str == '+' || *str == '-')
+	if (*str == '-')
 	{
-		if (*str == '-')
-			sign *= -1;
+		sign = -sign;
 		str++;
 	}
-	while ('0' <= *str && *str <= '9')
+	else if (*str == '+')
+		str++;
+	while (*str >= '0' && *str <= '9')
 	{
-		res = res * 10 + *str - 48;
-		if (res < 0 && sign == 1)
+		if (sign == 1 && (nbr > (LONG_MAX - (*str - '0')) / 10))
 			return (-1);
-		if (res < 0 && sign == -1)
+		else if (sign == -1 && (-nbr < (LONG_MIN + (*str - '0')) / 10))
 			return (0);
+		nbr = nbr * 10 + *str - '0';
 		str++;
 	}
-	return ((int)(res * sign));
+	return (sign * nbr);
 }
 
 long double	ft_atold(const char *s)
@@ -120,7 +152,7 @@ void	ft_close(t_fractol *f, int exitcode)
 
 float	ft_rand(void)
 {
-	static unsigned long int	next;
+	static unsigned long int	next = 5;
 
 	next = next * 1103515245 + 12345;
 	return (((next / 65536) % 32768) / (float)32767);
@@ -251,16 +283,21 @@ void	draw_fractals(void *param)
 
 	f = (t_fractol *)param;
 	i = 0;
+	if (f->disco_mode > 0)
+	{
+		f->r = ft_rand();
+		f->g = ft_rand();
+		f->b = ft_rand();
+	}
 	while (i < HEIGHT)
 	{
-		j = 0;
-		while (j < WIDTH)
+		j = -1;
+		while (++j < WIDTH)
 		{
 			f->y0 = (j - WIDTH / 2) * f->scale;
 			f->x0 = (i - HEIGHT / 2) * f->scale;
 			f->color = color_generator(f->func(f), f);
 			mlx_put_pixel(f->image, i, j, f->color);
-			j++;
 		}
 		i++;
 	}
@@ -272,6 +309,7 @@ int	initialize_fractol(t_fractol *f)
 	f->r = ft_rand();
 	f->g = ft_rand();
 	f->b = ft_rand();
+	f->disco_mode = -1;
 	f->a = 255;
 	f->scale = 4.0 / WIDTH;
 	f->precision = 100;
@@ -309,6 +347,8 @@ void	ft_keyboard_hooks(mlx_key_data_t k_data, void *arg)
 		f->g = ft_rand();
 		f->b = ft_rand();
 	}
+	if (k_data.key == MLX_KEY_D && k_data.action == MLX_PRESS)
+		f->disco_mode *= -1;
 }
 
 int	ft_strcmp(char *str1, char *str2)
@@ -349,7 +389,7 @@ int	main(int argc, char **argv)
 	t_fractol	f;
 
 	if (!validity_check(&f, argc, argv))
-		return (printf("Usage:\n"), 1);
+		print_usage();
 	initialize_fractol(&f);
 	mlx_key_hook(f.mlx, &ft_keyboard_hooks, &f);
 	mlx_loop_hook(f.mlx, draw_fractals, &f);

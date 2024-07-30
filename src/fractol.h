@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/29 23:23:28 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/30 14:48:05 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <math.h>
+# include <limits.h>
 # include <stdbool.h>
+# include <unistd.h>
 # include <MLX42/MLX42.h>
 
 # define WIDTH	800
@@ -43,6 +45,7 @@ typedef struct s_fractol
 	double		julia_c_real;
 	double		julia_c_imaginary;
 	int			(*func)(struct s_fractol *f);
+	int			disco_mode;
 }				t_fractol;
 
 #endif
