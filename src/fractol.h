@@ -6,17 +6,14 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 04:12:44 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 04:23:57 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FRACTOL_H
 # define FRACTOL_H
-# include <stdio.h>
 # include <stdlib.h>
-# include <math.h>
 # include <limits.h>
-# include <stdbool.h>
 # include <unistd.h>
 # include <MLX42/MLX42.h>
 
