@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 03:08:52 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 03:27:01 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void	close_hook(void *arg)
 
 float	ft_rand(void)
 {
-	static unsigned long int	next = 5;
+	static unsigned long int	next;
 
 	next = next * 1103515245 + 12345;
 	return (((next / 65536) % 32768) / (float)32767);
