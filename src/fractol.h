@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 02:39:02 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 04:05:57 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,30 @@ typedef struct s_fractol
 	int			disco_mode;
 	double		zoom;
 }				t_fractol;
+
+// Hooks
+void		close_hook(void *arg);
+void		keyboard_hooks(mlx_key_data_t k_data, void *arg);
+void		scroll_hook(double xdelta, double ydelta, void *arg);
+
+// Colors
+uint32_t	color_generator(int i, t_fractol *f);
+void		get_random_colors(t_fractol *f);
+
+// Sets
+int			is_in_mandelbrot(t_fractol *f);
+int			is_in_julia(t_fractol *f);
+int			is_in_multibrot3(t_fractol *f);
+int			is_in_burning_ship(t_fractol *f);
+
+// Complex arithmetic
+t_complex	ft_complex_sum(t_complex comp1, t_complex comp2);
+t_complex	ft_complex_square(t_complex comp);
+t_complex	ft_complex_cube(t_complex comp);
+
+// Utils
+void		ft_putstr_fd(char *s, int fd);
+long double	ft_atold(const char *s);
+int			ft_strcmp(char *str1, char *str2);
 
 #endif
