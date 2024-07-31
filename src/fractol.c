@@ -6,13 +6,13 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 04:07:14 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 04:22:57 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-static void	print_usage(void)
+static int	print_usage(void)
 {
 	ft_putstr_fd("------------------------------------------------------\n", 1);
 	ft_putstr_fd("Usage:\n", 1);
@@ -28,7 +28,7 @@ static void	print_usage(void)
 	ft_putstr_fd("Enter and exit DISCO mode: D\n", 1);
 	ft_putstr_fd("End program: ESC\n", 1);
 	ft_putstr_fd("------------------------------------------------------\n", 1);
-	exit (1);
+	exit(1);
 }
 
 static void	draw_fractals(void *param)
@@ -108,7 +108,7 @@ int	main(int argc, char **argv)
 	t_fractol	f;
 
 	if (!validity_check(&f, argc, argv))
-		print_usage();
+		return (print_usage());
 	initialize_fractol(&f);
 	mlx_key_hook(f.mlx, &keyboard_hooks, &f);
 	mlx_close_hook(f.mlx, &close_hook, &f);
@@ -116,5 +116,5 @@ int	main(int argc, char **argv)
 	mlx_loop_hook(f.mlx, draw_fractals, &f);
 	mlx_loop(f.mlx);
 	mlx_terminate(f.mlx);
-	return (EXIT_SUCCESS);
+	return (0);
 }
