@@ -6,13 +6,13 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 04:22:57 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 12:51:28 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-static int	print_usage(void)
+static void	print_usage(void)
 {
 	ft_putstr_fd("------------------------------------------------------\n", 1);
 	ft_putstr_fd("Usage:\n", 1);
@@ -108,7 +108,7 @@ int	main(int argc, char **argv)
 	t_fractol	f;
 
 	if (!validity_check(&f, argc, argv))
-		return (print_usage());
+		print_usage();
 	initialize_fractol(&f);
 	mlx_key_hook(f.mlx, &keyboard_hooks, &f);
 	mlx_close_hook(f.mlx, &close_hook, &f);
