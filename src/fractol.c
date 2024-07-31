@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/30 17:30:05 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 03:08:52 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,20 @@ void	ft_putstr_fd(char *s, int fd)
 
 void	print_usage(void)
 {
-	ft_putstr_fd("Usage:\nFirst argument has to be one of those sets: ", 1);
-	ft_putstr_fd("Mandelbrot, Julia.\n", 1);
-	ft_putstr_fd("In case the Julia set was choosen provide two additional ", 1);
-	ft_putstr_fd("parameters: the real and imaginary parts of C.\n", 1);
-	ft_putstr_fd("To move the view use arrows, to zoom in and out use scroll.\n", 1);
-	ft_putstr_fd("To increase precision press Q to decrease it press W.\n", 1);
-	ft_putstr_fd("To change colour palette press C.\n", 1);
+	ft_putstr_fd("------------------------------------------------------\n", 1);
+	ft_putstr_fd("Usage:\n", 1);
+	ft_putstr_fd("Please enter a valid set name: ", 1);
+	ft_putstr_fd("Mandelbrot, Julia, Ship or Multibrot3.\n", 1);
+	ft_putstr_fd("Julia needs real and imaginary parts as input.\n", 1);
+	ft_putstr_fd("Example: ./fractol Mandelbrot\n", 1);
+	ft_putstr_fd("Example: ./fractol Julia -0.5251993 -0.5251993\n", 1);
+	ft_putstr_fd("Use arrow keys to move, use scroll to zoom in and out.\n", 1);
+	ft_putstr_fd("Increase precision: Q\n", 1);
+	ft_putstr_fd("Decrease precision: W\n", 1);
+	ft_putstr_fd("Change color palate: C\n", 1);
+	ft_putstr_fd("Enter and exit DISCO mode: D\n", 1);
+	ft_putstr_fd("End program: ESC\n", 1);
+	ft_putstr_fd("------------------------------------------------------\n", 1);
 	exit (1);
 }
 
@@ -138,8 +145,11 @@ t_complex	ft_complex_cube(t_complex comp)
 	return (result);
 }
 
-void	ft_close(t_fractol *f, int exitcode)
+void	close_hook(void *arg)
 {
+	t_fractol	*f;
+
+	f = (t_fractol *)arg;
 	if (f->image)
 		mlx_delete_image(f->mlx, f->image);
 	if (f->mlx)
@@ -147,7 +157,7 @@ void	ft_close(t_fractol *f, int exitcode)
 		mlx_close_window(f->mlx);
 		mlx_terminate(f->mlx);
 	}
-	exit(exitcode);
+	exit(0);
 }
 
 float	ft_rand(void)
@@ -268,11 +278,18 @@ uint32_t	color_generator(int i, t_fractol *f)
 	int		g;
 	int		b;
 
-	new = (double)i / 100;
+	new = (double)i / f->precision;
 	r = (int)(f->r * new * 4242) % 255;
 	g = (int)(f->g * new * 4242) % 255;
 	b = (int)(f->b * new * 4242) % 255;
 	return (ft_pixel(r, g, b, f->a));
+}
+
+void	get_random_colors(t_fractol *f)
+{
+	f->r = ft_rand();
+	f->g = ft_rand();
+	f->b = ft_rand();
 }
 
 void	draw_fractals(void *param)
@@ -284,18 +301,14 @@ void	draw_fractals(void *param)
 	f = (t_fractol *)param;
 	i = 0;
 	if (f->disco_mode > 0)
-	{
-		f->r = ft_rand();
-		f->g = ft_rand();
-		f->b = ft_rand();
-	}
+		get_random_colors(f);
 	while (i < HEIGHT)
 	{
 		j = -1;
 		while (++j < WIDTH)
 		{
-			f->y0 = (j - WIDTH / 2) * f->scale;
-			f->x0 = (i - HEIGHT / 2) * f->scale;
+			f->y0 = j * (f->y_max - f->y_min) / HEIGHT + f->y_min;
+			f->x0 = i * (f->x_max - f->x_min) / WIDTH + f->x_min;
 			f->color = color_generator(f->func(f), f);
 			mlx_put_pixel(f->image, i, j, f->color);
 		}
@@ -306,13 +319,15 @@ void	draw_fractals(void *param)
 
 int	initialize_fractol(t_fractol *f)
 {
-	f->r = ft_rand();
-	f->g = ft_rand();
-	f->b = ft_rand();
-	f->disco_mode = -1;
+	get_random_colors(f);
 	f->a = 255;
-	f->scale = 4.0 / WIDTH;
+	f->disco_mode = -1;
 	f->precision = 100;
+	f->zoom = 1;
+	f->x_max = 2;
+	f->y_max = 2;
+	f->x_min = -2;
+	f->y_min = -2;
 	f->mlx = mlx_init(WIDTH, HEIGHT, "Fractol", true);
 	if (!f->mlx)
 		return (EXIT_FAILURE);
@@ -330,7 +345,31 @@ int	initialize_fractol(t_fractol *f)
 	return (0);
 }
 
-void	ft_keyboard_hooks(mlx_key_data_t k_data, void *arg)
+void	up_down_left_right_hooks(mlx_key_data_t k_data, t_fractol *f)
+{
+	if (k_data.key == MLX_KEY_UP && k_data.action == MLX_PRESS)
+	{
+		f->y_max += 0.1 * f->zoom;
+		f->y_min += 0.1 * f->zoom;
+	}
+	if (k_data.key == MLX_KEY_DOWN && k_data.action == MLX_PRESS)
+	{
+		f->y_max -= 0.1 * f->zoom;
+		f->y_min -= 0.1 * f->zoom;
+	}
+	if (k_data.key == MLX_KEY_LEFT && k_data.action == MLX_PRESS)
+	{
+		f->x_max += 0.1 * f->zoom;
+		f->x_min += 0.1 * f->zoom;
+	}
+	if (k_data.key == MLX_KEY_RIGHT && k_data.action == MLX_PRESS)
+	{
+		f->x_max -= 0.1 * f->zoom;
+		f->x_min -= 0.1 * f->zoom;
+	}
+}
+
+void	keyboard_hooks(mlx_key_data_t k_data, void *arg)
 {
 	t_fractol	*f;
 
@@ -340,15 +379,12 @@ void	ft_keyboard_hooks(mlx_key_data_t k_data, void *arg)
 	if (k_data.key == MLX_KEY_W && k_data.action == MLX_PRESS)
 		f->precision *= 0.9;
 	if (k_data.key == MLX_KEY_ESCAPE && k_data.action == MLX_PRESS)
-		ft_close(f, 0);
+		close_hook(f);
 	if (k_data.key == MLX_KEY_C && k_data.action == MLX_PRESS)
-	{
-		f->r = ft_rand();
-		f->g = ft_rand();
-		f->b = ft_rand();
-	}
+		get_random_colors(f);
 	if (k_data.key == MLX_KEY_D && k_data.action == MLX_PRESS)
 		f->disco_mode *= -1;
+	up_down_left_right_hooks(k_data, f);
 }
 
 int	ft_strcmp(char *str1, char *str2)
@@ -384,6 +420,35 @@ int	validity_check(t_fractol *f, int argc, char **argv)
 	return (1);
 }
 
+void	scroll_hook(double xdelta, double ydelta, void *arg)
+{
+	t_fractol	*f;
+	t_complex	offset;
+	double		coefficient;
+	int32_t		mouse_x;
+	int32_t		mouse_y;
+
+	(void) xdelta;
+	f = (t_fractol *)arg;
+	if (ydelta != 0)
+	{
+		mlx_get_mouse_pos(f->mlx, &mouse_x, &mouse_y);
+		if (ydelta > 0)
+			coefficient = 1.1;
+		else
+			coefficient = 0.9;
+		f->zoom *= coefficient;
+		offset.real = (mouse_x * (f->x_max - f->x_min)
+				/ WIDTH + f->x_min) * (1 - coefficient);
+		offset.i = (mouse_y * (f->y_max - f->y_min)
+				/ HEIGHT + f->y_min) * (1 - coefficient);
+		f->x_max = f->x_max * coefficient + offset.real;
+		f->x_min = f->x_min * coefficient + offset.real;
+		f->y_max = f->y_max * coefficient + offset.i;
+		f->y_min = f->y_min * coefficient + offset.i;
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_fractol	f;
@@ -391,7 +456,9 @@ int	main(int argc, char **argv)
 	if (!validity_check(&f, argc, argv))
 		print_usage();
 	initialize_fractol(&f);
-	mlx_key_hook(f.mlx, &ft_keyboard_hooks, &f);
+	mlx_key_hook(f.mlx, &keyboard_hooks, &f);
+	mlx_close_hook(f.mlx, &close_hook, &f);
+	mlx_scroll_hook(f.mlx, &scroll_hook, &f);
 	mlx_loop_hook(f.mlx, draw_fractals, &f);
 	mlx_loop(f.mlx);
 	mlx_terminate(f.mlx);

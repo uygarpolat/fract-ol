@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/30 14:48:05 by upolat           ###   ########.fr       */
+/*   Updated: 2024/07/31 02:39:02 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,16 @@ typedef struct s_fractol
 	double		a;
 	double		x0;
 	double		y0;
-	double		scale;
+	double		x_max;
+	double		y_max;
+	double		x_min;
+	double		y_min;
 	int			precision;
 	double		julia_c_real;
 	double		julia_c_imaginary;
 	int			(*func)(struct s_fractol *f);
 	int			disco_mode;
+	double		zoom;
 }				t_fractol;
 
 #endif
