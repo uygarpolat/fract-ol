@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 03:47:28 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 03:48:02 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/01 03:16:28 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	is_in_julia(t_fractol *f)
 
 	i = 0;
 	z.real = f->x0;
-	z.i = -f->y0;
+	z.i = f->y0;
 	c.real = f->julia_c_real;
 	c.i = f->julia_c_imaginary;
 	while (i < f->precision)
@@ -29,7 +29,10 @@ int	is_in_julia(t_fractol *f)
 		z = ft_complex_sum(ft_complex_square(z), c);
 		magnitude_squared = z.real * z.real + z.i * z.i;
 		if (magnitude_squared > 4.0)
+		{
+			i = i * f->mono_color;
 			break ;
+		}
 		i++;
 	}
 	return (i);
@@ -52,7 +55,10 @@ int	is_in_mandelbrot(t_fractol *f)
 		z = ft_complex_sum(ft_complex_square(z), c);
 		magnitude_squared = z.real * z.real + z.i * z.i;
 		if (magnitude_squared > 4.0)
+		{
+			i = i * f->mono_color;
 			break ;
+		}
 		i++;
 	}
 	return (i);
@@ -75,7 +81,10 @@ int	is_in_multibrot3(t_fractol *f)
 		z = ft_complex_sum(ft_complex_cube(z), c);
 		magnitude_squared = z.real * z.real + z.i * z.i;
 		if (magnitude_squared > 4.0)
+		{
+			i = i * f->mono_color;
 			break ;
+		}
 		i++;
 	}
 	return (i);
@@ -86,7 +95,6 @@ int	is_in_burning_ship(t_fractol *f)
 	int			i;
 	t_complex	z;
 	t_complex	c;
-	double		tmp_real;
 	double		magnitude_squared;
 
 	i = -1;
@@ -100,12 +108,39 @@ int	is_in_burning_ship(t_fractol *f)
 			z.real = -z.real;
 		if (z.i < 0)
 			z.i = -z.i;
-		tmp_real = z.real * z.real - z.i * z.i + c.real;
-		z.i = 2 * z.real * z.i + c.i;
-		z.real = tmp_real;
+		z = ft_complex_sum(ft_complex_square(z), c);
 		magnitude_squared = z.real * z.real + z.i * z.i;
 		if (magnitude_squared > 4.0)
+		{
+			i = i * f->mono_color;
 			break ;
+		}
+	}
+	return (i);
+}
+
+int	is_in_phoenix(t_fractol *f)
+{
+	int			i;
+	t_phoenix	p;
+
+	p.epsilon.real = -0.5;
+	p.epsilon.i = 0;
+	p.c.real = 0.5667;
+	p.c.i = 0;
+	p.z.real = f->y0;
+	p.z.i = f->x0;
+	p.z_prev.real = 0;
+	p.z_prev.i = 0;
+	i = -1;
+	while (++i < f->precision)
+	{
+		p.temp_z = ft_complex_sum(ft_complex_sum(ft_complex_square(p.z), p.c),
+				ft_complex_mult(p.epsilon, p.z_prev));
+		p.z_prev = p.z;
+		p.z = p.temp_z;
+		if (p.z.real * p.z.real + p.z.i * p.z.i > 4.0)
+			return (i * f->mono_color);
 	}
 	return (i);
 }

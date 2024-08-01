@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 04:23:57 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/02 01:32:56 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,15 @@ typedef struct s_complex
 	double	real;
 	double	i;
 }			t_complex;
+
+typedef struct s_phoenix
+{
+	t_complex	temp_z;
+	t_complex	epsilon;
+	t_complex	c;
+	t_complex	z;
+	t_complex	z_prev;
+}				t_phoenix;
 
 typedef struct s_fractol
 {
@@ -47,6 +56,7 @@ typedef struct s_fractol
 	int			(*func)(struct s_fractol *f);
 	int			disco_mode;
 	double		zoom;
+	int			mono_color;
 }				t_fractol;
 
 // Hooks
@@ -63,15 +73,20 @@ int			is_in_mandelbrot(t_fractol *f);
 int			is_in_julia(t_fractol *f);
 int			is_in_multibrot3(t_fractol *f);
 int			is_in_burning_ship(t_fractol *f);
+int			is_in_phoenix(t_fractol *f);
 
 // Complex arithmetic
 t_complex	ft_complex_sum(t_complex comp1, t_complex comp2);
 t_complex	ft_complex_square(t_complex comp);
 t_complex	ft_complex_cube(t_complex comp);
+t_complex	ft_complex_mult(t_complex comp1, t_complex comp2);
 
 // Utils
+int			initialize_fractol(t_fractol *f);
 void		ft_putstr_fd(char *s, int fd);
 long double	ft_atold(const char *s);
 int			ft_strcmp(char *str1, char *str2);
+int			double_validity_check(char *str);
+int			validity_check(t_fractol *f, int argc, char **argv);
 
 #endif

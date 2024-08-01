@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 03:34:52 by upolat            #+#    #+#             */
-/*   Updated: 2024/07/31 03:54:54 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/01 16:50:38 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,21 @@ static void	up_down_left_right_hooks(mlx_key_data_t k_data, t_fractol *f)
 	}
 }
 
+static void	reset_selections(mlx_key_data_t k_data, t_fractol *f)
+{
+	if (k_data.key == MLX_KEY_R && k_data.action == MLX_PRESS)
+	{
+		f->disco_mode = -1;
+		f->mono_color = 1;
+		f->precision = 100;
+		f->zoom = 1;
+		f->x_max = 2;
+		f->y_max = 2;
+		f->x_min = -2;
+		f->y_min = -2;
+	}
+}
+
 void	keyboard_hooks(mlx_key_data_t k_data, void *arg)
 {
 	t_fractol	*f;
@@ -66,6 +81,9 @@ void	keyboard_hooks(mlx_key_data_t k_data, void *arg)
 		get_random_colors(f);
 	if (k_data.key == MLX_KEY_D && k_data.action == MLX_PRESS)
 		f->disco_mode *= -1;
+	if (k_data.key == MLX_KEY_M && k_data.action == MLX_PRESS)
+		f->mono_color = (f->mono_color + 1) % 2;
+	reset_selections(k_data, f);
 	up_down_left_right_hooks(k_data, f);
 }
 
@@ -89,7 +107,7 @@ void	scroll_hook(double xdelta, double ydelta, void *arg)
 		f->zoom *= coefficient;
 		offset.real = (mouse_x * (f->x_max - f->x_min)
 				/ WIDTH + f->x_min) * (1 - coefficient);
-		offset.i = (mouse_y * (f->y_max - f->y_min)
+		offset.i = ((HEIGHT - mouse_y) * (f->y_max - f->y_min)
 				/ HEIGHT + f->y_min) * (1 - coefficient);
 		f->x_max = f->x_max * coefficient + offset.real;
 		f->x_min = f->x_min * coefficient + offset.real;
