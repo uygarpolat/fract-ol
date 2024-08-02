@@ -6,21 +6,24 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 02:21:29 by upolat            #+#    #+#              #
-#    Updated: 2024/08/02 16:45:28 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/02 20:35:39 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := fractol
 CC := cc
 CFLAGS := -Wall -Wextra -Werror -Ofast -flto
-LIBMLX := ./lib/MLX42
+LIB_DIR := ./lib
+LIBMLX := $(LIB_DIR)/MLX42
+MLX42_REPO := https://github.com/codam-coding-college/MLX42.git
 
+# Linux
 # HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
 # LIBS := ${LIBMLX}/build/libmlx42.a -ldl -lglfw -pthread -lm
 
+#MacOS
 HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
 LIBS := $(LIBMLX)/build/libmlx42.a -L/opt/homebrew/Cellar/glfw/3.4/lib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
-
 
 MANDATORY_SRCS := src/mandatory/arithmetic.c \
                   src/mandatory/colors.c \
@@ -63,16 +66,28 @@ $(NAME)-bonus: $(BONUS_OBJS) $(LIBMLX)/build/libmlx42.a
 	@touch .bonus
 	@rm -f .mandatory
 
-$(LIBMLX)/build/libmlx42.a:
-	@cmake $(LIBMLX) -B $(LIBMLX)/build
+$(LIBMLX)/build/libmlx42.a: $(LIBMLX)
+	@cd $(LIBMLX) && cmake -B build
 	@make -C $(LIBMLX)/build -j4
 
-%.o: %.c
+# $(LIBMLX):
+#	@if [ ! -d $(LIBMLX) ]; then \
+#		echo "Cloning MLX42 library..."; \
+#		cd $(LIB_DIR) && git clone $(MLX42_REPO); \
+#	fi
+
+$(LIBMLX):
+	@if [ ! -d $(LIBMLX) ]; then \
+		echo "Cloning MLX42 library..."; \
+		mkdir -p $(LIB_DIR); \
+		cd $(LIB_DIR) && git clone $(MLX42_REPO); \
+	fi
+
+%.o: %.c $(LIBMLX)/build/libmlx42.a
 	$(CC) $(CFLAGS) $(HEADERS) -o $@ -c $<
 
 clean:
 	rm -rf $(MANDATORY_OBJS) $(BONUS_OBJS)
-	rm -rf $(LIBMLX)/build
 	@rm -f .bonus .mandatory
 
 fclean: clean
