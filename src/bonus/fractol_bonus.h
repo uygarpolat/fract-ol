@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 01:41:05 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/02 14:51:19 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,11 @@ void		get_random_colors(t_fractol *f);
 // Sets
 int			is_in_mandelbrot(t_fractol *f);
 int			is_in_julia(t_fractol *f);
-int			is_in_multibrot3(t_fractol *f);
-int			is_in_burning_ship(t_fractol *f);
 int			is_in_phoenix(t_fractol *f);
 
 // Complex arithmetic
 t_complex	ft_complex_sum(t_complex comp1, t_complex comp2);
 t_complex	ft_complex_square(t_complex comp);
-t_complex	ft_complex_cube(t_complex comp);
 t_complex	ft_complex_mult(t_complex comp1, t_complex comp2);
 
 // Utils

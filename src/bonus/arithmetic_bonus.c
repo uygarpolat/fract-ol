@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 03:50:26 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 01:39:17 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/02 14:43:34 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,6 @@ t_complex	ft_complex_square(t_complex comp)
 
 	result.real = (comp.real * comp.real) - (comp.i * comp.i);
 	result.i = 2 * comp.real * comp.i;
-	return (result);
-}
-
-t_complex	ft_complex_cube(t_complex comp)
-{
-	t_complex	result;
-
-	result.real = (comp.real * comp.real * comp.real)
-		- 3 * (comp.real * comp.i * comp.i);
-	result.i = 3 * (comp.real * comp.real * comp.i)
-		- (comp.i * comp.i * comp.i);
 	return (result);
 }
 

@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 02:51:37 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/02 14:22:16 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,8 @@ static void	draw_fractals(void *param)
 	mlx_image_to_window(f->mlx, f->image, 0, 0);
 }
 
-int	initialize_fractol(t_fractol *f)
+static void	set_values(t_fractol *f)
 {
-	get_random_colors(f);
 	f->a = 255;
 	f->disco_mode = -1;
 	f->mono_color = 1;
@@ -71,19 +70,28 @@ int	initialize_fractol(t_fractol *f)
 	f->y_max = 2;
 	f->x_min = -2;
 	f->y_min = -2;
+}
+
+int	initialize_fractol(t_fractol *f)
+{
+	get_random_colors(f);
+	set_values(f);
 	f->mlx = mlx_init(WIDTH, HEIGHT, "Fractol", true);
 	if (!f->mlx)
-		return (EXIT_FAILURE);
+		return (1);
 	f->image = mlx_new_image(f->mlx, WIDTH, HEIGHT);
 	if (!f->image)
 	{
 		mlx_close_window(f->mlx);
-		return (EXIT_FAILURE);
+		mlx_terminate(f->mlx);
+		return (1);
 	}
 	if (mlx_image_to_window(f->mlx, f->image, 0, 0) == -1)
 	{
+		mlx_delete_image(f->mlx, f->image);
 		mlx_close_window(f->mlx);
-		return (EXIT_FAILURE);
+		mlx_terminate(f->mlx);
+		return (1);
 	}
 	return (0);
 }
@@ -94,7 +102,8 @@ int	main(int argc, char **argv)
 
 	if (!validity_check(&f, argc, argv))
 		print_usage();
-	initialize_fractol(&f);
+	if (initialize_fractol(&f))
+		return (1);
 	mlx_key_hook(f.mlx, &keyboard_hooks, &f);
 	mlx_close_hook(f.mlx, &close_hook, &f);
 	mlx_scroll_hook(f.mlx, &scroll_hook, &f);
