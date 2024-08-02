@@ -6,7 +6,7 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 02:21:29 by upolat            #+#    #+#              #
-#    Updated: 2024/08/02 03:14:52 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/02 16:45:28 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,12 @@ CC := cc
 CFLAGS := -Wall -Wextra -Werror -Ofast -flto
 LIBMLX := ./lib/MLX42
 
+# HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
+# LIBS := ${LIBMLX}/build/libmlx42.a -ldl -lglfw -pthread -lm
+
 HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
-LIBS := ${LIBMLX}/build/libmlx42.a -ldl -lglfw -pthread -lm
+LIBS := $(LIBMLX)/build/libmlx42.a -L/opt/homebrew/Cellar/glfw/3.4/lib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
+
 
 MANDATORY_SRCS := src/mandatory/arithmetic.c \
                   src/mandatory/colors.c \
