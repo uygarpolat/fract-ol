@@ -16,7 +16,7 @@ CFLAGS := -Wall -Wextra -Werror -Ofast -flto
 LIBMLX := ./lib/MLX42
 
 HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
-LIBS := $(LIBMLX)/build/libmlx42.a -L/opt/homebrew/Cellar/glfw/3.4/lib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
+LIBS := ${LIBMLX}/build/libmlx42.a -ldl -lglfw -pthread -lm
 
 MANDATORY_SRCS := src/mandatory/arithmetic.c \
                   src/mandatory/colors.c \
@@ -78,4 +78,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re libmlx mandatory bonus
-
