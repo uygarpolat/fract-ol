@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 03:55:42 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 01:40:34 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/02 16:35:18 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,16 @@
 void	ft_putstr_fd(char *s, int fd)
 {
 	int	i;
+	int	result;
 
+	result = 0;
 	i = 0;
 	while (s[i])
 	{
-		write(fd, &s[i], 1);
+		result = write(fd, &s[i], 1);
 		i++;
 	}
+	(void)result;
 }
 
 static int	ft_strlen(char *str)
