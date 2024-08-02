@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 03:34:52 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 01:40:09 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/02 03:31:25 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,13 @@ static void	up_down_left_right_hooks(mlx_key_data_t k_data, t_fractol *f)
 	}
 	if (k_data.key == MLX_KEY_LEFT && k_data.action == MLX_PRESS)
 	{
-		f->x_max += 0.1 * f->zoom;
-		f->x_min += 0.1 * f->zoom;
+		f->x_max -= 0.1 * f->zoom;
+		f->x_min -= 0.1 * f->zoom;
 	}
 	if (k_data.key == MLX_KEY_RIGHT && k_data.action == MLX_PRESS)
 	{
-		f->x_max -= 0.1 * f->zoom;
-		f->x_min -= 0.1 * f->zoom;
+		f->x_max += 0.1 * f->zoom;
+		f->x_min += 0.1 * f->zoom;
 	}
 }
 
