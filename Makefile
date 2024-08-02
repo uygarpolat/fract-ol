@@ -6,7 +6,7 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 02:21:29 by upolat            #+#    #+#              #
-#    Updated: 2024/08/02 02:30:09 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/02 03:14:52 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,26 +18,50 @@ LIBMLX := ./lib/MLX42
 HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
 LIBS := $(LIBMLX)/build/libmlx42.a -L/opt/homebrew/Cellar/glfw/3.4/lib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
 
-MANDATORY_SRCS := $(wildcard src/mandatory/*.c)
-BONUS_SRCS := $(wildcard src/bonus/*.c)
+MANDATORY_SRCS := src/mandatory/arithmetic.c \
+                  src/mandatory/colors.c \
+                  src/mandatory/fractol.c \
+                  src/mandatory/hooks.c \
+                  src/mandatory/sets.c \
+                  src/mandatory/utils.c \
+                  src/mandatory/validity.c
+
+BONUS_SRCS := src/bonus/arithmetic_bonus.c \
+              src/bonus/colors_bonus.c \
+              src/bonus/fractol_bonus.c \
+              src/bonus/hooks_bonus.c \
+              src/bonus/sets_bonus.c \
+              src/bonus/utils_bonus.c \
+              src/bonus/validity_bonus.c
 
 MANDATORY_OBJS := $(MANDATORY_SRCS:.c=.o)
 BONUS_OBJS := $(BONUS_SRCS:.c=.o)
 
-all: $(NAME)
+all: mandatory
 
-mandatory: $(NAME)
+mandatory: .mandatory
 
-bonus: $(NAME)-bonus
+bonus: .bonus
 
-$(NAME): libmlx $(MANDATORY_OBJS)
+$(NAME): $(MANDATORY_OBJS) $(LIBMLX)/build/libmlx42.a
 	$(CC) $(MANDATORY_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 
-$(NAME)-bonus: libmlx $(BONUS_OBJS)
+$(NAME)-bonus: $(BONUS_OBJS) $(LIBMLX)/build/libmlx42.a
 	$(CC) $(BONUS_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
 
-libmlx:
-	cmake $(LIBMLX) -B $(LIBMLX)/build && make -C $(LIBMLX)/build -j4
+.mandatory: $(MANDATORY_OBJS) $(LIBMLX)/build/libmlx42.a
+	$(CC) $(MANDATORY_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	@touch .mandatory
+	@rm -f .bonus
+
+.bonus: $(BONUS_OBJS) $(LIBMLX)/build/libmlx42.a
+	$(CC) $(BONUS_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	@touch .bonus
+	@rm -f .mandatory
+
+$(LIBMLX)/build/libmlx42.a:
+	@cmake $(LIBMLX) -B $(LIBMLX)/build
+	@make -C $(LIBMLX)/build -j4
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(HEADERS) -o $@ -c $<
@@ -45,9 +69,11 @@ libmlx:
 clean:
 	rm -rf $(MANDATORY_OBJS) $(BONUS_OBJS)
 	rm -rf $(LIBMLX)/build
+	@rm -f .bonus .mandatory
 
 fclean: clean
-	rm -rf $(NAME) $(NAME)-bonus
+	rm -rf $(NAME)
+	@rm -f .bonus .mandatory
 
 re: fclean all
 
