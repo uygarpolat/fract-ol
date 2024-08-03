@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 02:00:36 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 14:46:40 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/03 15:14:39 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,23 +17,14 @@
 # include <unistd.h>
 # include <MLX42/MLX42.h>
 
-# define WIDTH	800
-# define HEIGHT	800
+# define WIDTH	1200
+# define HEIGHT	1200
 
 typedef struct s_complex
 {
 	double	real;
 	double	i;
 }			t_complex;
-
-typedef struct s_phoenix
-{
-	t_complex	temp_z;
-	t_complex	epsilon;
-	t_complex	c;
-	t_complex	z;
-	t_complex	z_prev;
-}				t_phoenix;
 
 typedef struct s_fractol
 {
@@ -81,7 +72,6 @@ int			initialize_fractol(t_fractol *f);
 void		ft_putstr_fd(char *s, int fd);
 long double	ft_atold(const char *s);
 int			ft_strcmp(char *str1, char *str2);
-int			double_validity_check(char *str);
 int			validity_check(t_fractol *f, int argc, char **argv);
 
 #endif

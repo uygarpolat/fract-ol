@@ -6,13 +6,13 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 01:29:04 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 02:38:49 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/03 15:08:14 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fractol.h"
 
-int	double_validity_check(char *str)
+static int	double_validity_check(char *str)
 {
 	int	i;
 	int	dot_counter;

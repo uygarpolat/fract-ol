@@ -6,7 +6,7 @@
 /*   By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/27 16:29:31 by upolat            #+#    #+#             */
-/*   Updated: 2024/08/02 14:25:05 by upolat           ###   ########.fr       */
+/*   Updated: 2024/08/03 15:06:15 by upolat           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void	print_usage(void)
 	ft_putstr_fd("------------------------------------------------------\n", 1);
 	ft_putstr_fd("Usage:\n", 1);
 	ft_putstr_fd("Please enter a valid set name: ", 1);
-	ft_putstr_fd("Mandelbrot, Julia, Phoenix.\n", 1);
+	ft_putstr_fd("Mandelbrot, Julia, Phoenix\n", 1);
 	ft_putstr_fd("Julia needs real and imaginary parts as input.\n", 1);
 	ft_putstr_fd("Example: ./fractol Mandelbrot\n", 1);
 	ft_putstr_fd("Example: ./fractol Julia -0.5251993 -0.5251993\n", 1);

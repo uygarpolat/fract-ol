@@ -6,24 +6,25 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 02:21:29 by upolat            #+#    #+#              #
-#    Updated: 2024/08/03 11:27:27 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/03 14:56:20 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := fractol
-CC := cc
+CC := clang
 CFLAGS := -Wall -Wextra -Werror -Ofast -flto
+LDFLAGS := -flto
 LIB_DIR := ./lib
 LIBMLX := $(LIB_DIR)/MLX42
 MLX42_REPO := https://github.com/codam-coding-college/MLX42.git
 
 # Linux
-# HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
-# LIBS := ${LIBMLX}/build/libmlx42.a -ldl -lglfw -pthread -lm
+HEADERS := -I ./include -I $(LIBMLX)/include -I /usr/include
+LIBS := $(LIBMLX)/build/libmlx42.a -ldl -lglfw -pthread -lm
 
 #MacOS
-HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
-LIBS := $(LIBMLX)/build/libmlx42.a -L/opt/homebrew/Cellar/glfw/3.4/lib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
+# HEADERS := -I ./include -I $(LIBMLX)/include -I /opt/homebrew/Cellar/glfw/3.4/include
+# LIBS := $(LIBMLX)/build/libmlx42.a -L/opt/homebrew/Cellar/glfw/3.4/lib -lglfw -framework Cocoa -framework OpenGL -framework IOKit
 
 MANDATORY_SRCS := src/mandatory/arithmetic.c \
                   src/mandatory/colors.c \
@@ -51,18 +52,18 @@ mandatory: .mandatory
 bonus: .bonus
 
 $(NAME): $(MANDATORY_OBJS) $(LIBMLX)/build/libmlx42.a
-	$(CC) $(MANDATORY_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	$(CC) $(MANDATORY_OBJS) $(LIBS) $(HEADERS) $(LDFLAGS) -o $(NAME)
 
 $(NAME)-bonus: $(BONUS_OBJS) $(LIBMLX)/build/libmlx42.a
-	$(CC) $(BONUS_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	$(CC) $(BONUS_OBJS) $(LIBS) $(HEADERS) $(LDFLAGS) -o $(NAME)
 
 .mandatory: $(MANDATORY_OBJS) $(LIBMLX)/build/libmlx42.a
-	$(CC) $(MANDATORY_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	$(CC) $(MANDATORY_OBJS) $(LIBS) $(HEADERS) $(LDFLAGS) -o $(NAME)
 	@touch .mandatory
 	@rm -f .bonus
 
 .bonus: $(BONUS_OBJS) $(LIBMLX)/build/libmlx42.a
-	$(CC) $(BONUS_OBJS) $(LIBS) $(HEADERS) -o $(NAME)
+	$(CC) $(BONUS_OBJS) $(LIBS) $(HEADERS) $(LDFLAGS) -o $(NAME)
 	@touch .bonus
 	@rm -f .mandatory
 
@@ -79,6 +80,7 @@ $(LIBMLX):
 
 %.o: %.c $(LIBMLX)/build/libmlx42.a
 	$(CC) $(CFLAGS) $(HEADERS) -o $@ -c $<
+	@file $@
 
 clean:
 	rm -rf $(MANDATORY_OBJS) $(BONUS_OBJS)
