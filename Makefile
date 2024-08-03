@@ -6,7 +6,7 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 02:21:29 by upolat            #+#    #+#              #
-#    Updated: 2024/08/02 20:35:39 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/03 11:27:27 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -69,12 +69,6 @@ $(NAME)-bonus: $(BONUS_OBJS) $(LIBMLX)/build/libmlx42.a
 $(LIBMLX)/build/libmlx42.a: $(LIBMLX)
 	@cd $(LIBMLX) && cmake -B build
 	@make -C $(LIBMLX)/build -j4
-
-# $(LIBMLX):
-#	@if [ ! -d $(LIBMLX) ]; then \
-#		echo "Cloning MLX42 library..."; \
-#		cd $(LIB_DIR) && git clone $(MLX42_REPO); \
-#	fi
 
 $(LIBMLX):
 	@if [ ! -d $(LIBMLX) ]; then \
