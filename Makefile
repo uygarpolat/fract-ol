@@ -6,13 +6,13 @@
 #    By: upolat <upolat@student.hive.fi>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/28 02:21:29 by upolat            #+#    #+#              #
-#    Updated: 2024/08/03 14:56:20 by upolat           ###   ########.fr        #
+#    Updated: 2024/08/07 12:55:15 by upolat           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := fractol
 CC := clang
-CFLAGS := -Wall -Wextra -Werror -Ofast -flto
+CFLAGS := -Wall -Wextra -Werror -Ofast -flto -fno-builtin
 LDFLAGS := -flto
 LIB_DIR := ./lib
 LIBMLX := $(LIB_DIR)/MLX42
